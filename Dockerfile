@@ -1,7 +1,7 @@
 
 # Versión fijada (evita que Easypanel jale una versión distinta a la
 # que probaste en tu máquina y cambie el comportamiento de Task Runners)
-FROM n8nio/n8n:1.71.3
+FROM n8nio/n8n:2.30.6
  
 USER root
  

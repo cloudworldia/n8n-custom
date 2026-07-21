@@ -17,17 +17,16 @@ services:
       # Módulos permitidos dentro de nodos Function/Code
       - NODE_FUNCTION_ALLOW_BUILTIN=stream
       - NODE_FUNCTION_ALLOW_EXTERNAL=pdf-parse,mammoth,xlsx
-
-      # Carpeta global estándar de npm en la imagen base (node:alpine).
-      # No depende de ninguna carpeta custom creada por nosotros.
       - NODE_PATH=/usr/local/lib/node_modules
 
-      # Task Runners en modo interno: evita que Easypanel lance el runner
-      # como proceso/contenedor externo que no heredaría NODE_PATH.
-      - N8N_RUNNERS_ENABLED=true
-      - N8N_RUNNERS_MODE=internal
-      - N8N_RUNNERS_MAX_OLD_SPACE_SIZE=512
-      - N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION=true
+      # CLAVE: Task Runners DESACTIVADOS.
+      # El Task Runner externo de n8n 2.30.6 crashea en loop al iniciar
+      # (bug conocido: @napi-rs/canvas requiere glibc, esta imagen es
+      # musl/Alpine). Eso causaba el 101% de CPU constante.
+      # Con esto, el código de Function/Code vuelve a correr en el
+      # proceso principal (comportamiento pre-Task-Runners), que es más
+      # simple y no depende del módulo canvas roto.
+      - N8N_RUNNERS_ENABLED=false
 
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin

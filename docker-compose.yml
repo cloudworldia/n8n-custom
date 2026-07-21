@@ -1,0 +1,49 @@
+services:
+  n8n:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+    environment:
+      - TZ=America/Bogota
+      - GENERIC_TIMEZONE=America/Bogota
+      - N8N_HOST=tu-cotizador-sumimilla-cotizador.j1cl77.easypanel.host
+      - N8N_WEBHOOK_URL=https://cotizador-sumimilla-cotizador.j1cl77.easypanel.host
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_SECURE_COOKIE=true
+
+      # Módulos permitidos dentro de nodos Function/Code
+      - NODE_FUNCTION_ALLOW_BUILTIN=stream
+      - NODE_FUNCTION_ALLOW_EXTERNAL=pdf-parse,mammoth,xlsx
+
+      # Carpeta global estándar de npm en la imagen base (node:alpine).
+      # No depende de ninguna carpeta custom creada por nosotros.
+      - NODE_PATH=/usr/local/lib/node_modules
+
+      # Task Runners en modo interno: evita que Easypanel lance el runner
+      # como proceso/contenedor externo que no heredaría NODE_PATH.
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_RUNNERS_MODE=internal
+      - N8N_RUNNERS_MAX_OLD_SPACE_SIZE=512
+      - N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION=true
+
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=Isaac2014
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
+    # Si tu Compose no soporta "deploy", usa en su lugar:
+    # cpus: "1.0"
+    # mem_limit: 1024m
+
+volumes:
+  n8n_data:
